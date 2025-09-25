@@ -12,7 +12,8 @@
 # CONFIG="ms1mv3.base.ms1mv3_sphereface"
 # CONFIG="ms1mv3.base.ms1mv3_expface"
 # CONFIG="ms1mv3.base.ms1mv3_expface_uniface"
-CONFIG="ms1mv3.base.ms1mv3_magface"
+# CONFIG="ms1mv3.base.ms1mv3_magface"
+CONFIG="ms1mv3.base.ms1mv3_naiveface"
 
 conda run --live-stream --name base python train.py --config $CONFIG
 
