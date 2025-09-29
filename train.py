@@ -14,7 +14,7 @@ from lr_scheduler import MHLR
 from torch.optim.lr_scheduler import LinearLR, ExponentialLR, CosineAnnealingLR
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
-from partial_fc_v2 import PartialFC_V2, my_PFC, LoraFC, my_CE,my_BCE,my_BCE1,my_CE_logexp1,my_CE_logexp,my_CE_logexp2,Unified_Cross_Entropy_Loss_CosFace,Unified_Cross_Entropy_Loss_ExpFace,MagLinear
+from partial_fc_v2 import PartialFC_V2, my_PFC, LoraFC, my_CE,my_BCE,my_BCE1,my_CE_logexp1,my_CE_logexp,my_CE_logexp2,Unified_Cross_Entropy_Loss_CosFace,Unified_Cross_Entropy_Loss_ExpFace,MagLinear,CurricularFace
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from logger import logger
@@ -50,6 +50,8 @@ def ce(loss_name="my_CE",margin_loss=ArcFace, embedding_size=512, num_classes=10
         return Unified_Cross_Entropy_Loss_ExpFace(embedding_size,num_classes,num_classes,fp16)#不重采样不重加权的情况下
     elif loss_name=="MagFace":
         return MagLinear(embedding_size, num_classes)
+    elif loss_name=="CurricularFace":
+        return CurricularFace(embedding_size, num_classes, s=64.0, m=0.5)
     else:
         raise ValueError(f"Unknown loss name: {loss_name}")
 

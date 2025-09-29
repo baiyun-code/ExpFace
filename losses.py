@@ -879,3 +879,39 @@ class ArcFace_dd(torch.nn.Module):
         logits = logits * self.s   
         return logits
 
+class SphereFaceRv2(torch.nn.Module):
+    """ reference: <SphereFace: Deep Hypersphere Embedding for Face Recognition>"
+        It also used characteristic gradient detachment tricks proposed in
+        <SphereFace Revived: Unifying Hyperspherical Face Recognition>.
+    """
+    def __init__(self, s=60., m=1.4):
+        super(SphereFaceRv2, self).__init__()
+        # self.feat_dim = feat_dim
+        # self.num_class = num_class
+        self.s = s
+        self.m = m
+        # self.w = nn.Parameter(torch.Tensor(feat_dim, num_class))
+        # nn.init.xavier_normal_(self.w)
+
+    def forward(self, x : torch.Tensor, y : torch.Tensor):
+        index = torch.where(y != -1)[0]    # 有效样本
+        pos = y[index].view(-1)            # 正类索引
+
+        with torch.no_grad():
+            # 构造一个 mask，标记负类
+            mask = torch.ones_like(x, dtype=torch.bool)
+            mask[index, pos] = False       # 正类位置 = False (不修改)
+
+            # 对负类 logits 做变换
+            neg_logits = x[mask].clone()
+            theta = neg_logits.arccos()
+            final_neg_logits = (theta/self.m).cos()
+
+            # 写回负类位置
+            x[mask] = final_neg_logits
+
+        # scale
+        x = x * self.s
+        return x
+
+
